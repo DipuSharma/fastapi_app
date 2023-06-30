@@ -12,9 +12,10 @@ EMAIL = os.getenv("MAIL_FROM")
 PASS = os.getenv("PASS")
 ALGO = os.getenv("ALGO")
 BASE_DIR = Path(__file__).resolve().parent
-HOST = os.getenv("HOST")
 HOST_URL = os.getenv("HOST_URL")
 HOST_PORT = os.getenv("HOST_PORT")
+
+print(HOST_PORT, HOST_URL)
 
 # Celery objects
 
