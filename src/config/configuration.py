@@ -15,8 +15,6 @@ BASE_DIR = Path(__file__).resolve().parent
 HOST_URL = os.getenv("HOST_URL")
 HOST_PORT = os.getenv("HOST_PORT")
 
-print(HOST_PORT, HOST_URL)
-
 # Celery objects
 
 CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL")
@@ -54,9 +52,6 @@ class Settings:
     CELERY_TASK_SERIALIZER = 'pickle'
     CELERY_RESULT_SERIALIZER = 'pickle'
     BASE_DIR: BASE_DIR
-    DATABASE_URL = os.environ.get(
-        "DATABASE_URL", f"sqlite:///{BASE_DIR}/mydb.db")
     DATABASE_CONNECT_DICT: dict = {}
-
 
 setting = Settings()

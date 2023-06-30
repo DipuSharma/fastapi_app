@@ -1,4 +1,12 @@
+
+# Directory add
 venv/
+.vscode/
+__pycache__/
+*/__pycache__/
+**/*/__pycache__/
+
+
+# File Add
+*.db
 .env
-.vscode.
-__pycache__

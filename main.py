@@ -15,7 +15,8 @@ from src.config.celery_config import celery_app
 """
                    celery -A main.celery_app worker --loglevel=info
 """ 
-
+host_url = setting.HOST_URL
+port_url = setting.HOST_PORT
 app = FastAPI(title=setting.TITLE,
               description=setting.DESCRIPTION,
               version=setting.VERSION,
@@ -37,4 +38,4 @@ app.include_router(auth.router)
 
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", host=setting.HOST_URL, port=setting.HOST_PORT, reload=True)
+    uvicorn.run("main:app", host=f'{host_url}', port=f'{port_url}', reload=True)
