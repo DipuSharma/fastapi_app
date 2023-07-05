@@ -7,6 +7,7 @@ from src.config.configuration import setting
 from fastapi.middleware.cors import CORSMiddleware
 
 from src.routers.Auth import controller as auth
+from src.routers.Product import controller as product_router
 
 # Celery configuration
 from src.config.celery_config import celery_app
@@ -35,6 +36,7 @@ app.add_middleware(
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 app.include_router(auth.router)
+app.include_router(product_router.router)
 
 
 if __name__ == "__main__":

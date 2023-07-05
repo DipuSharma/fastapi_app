@@ -24,16 +24,18 @@ def create_access_token(username=None):
 
 
 def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
-    print("token__________________", token)
     try:
         verified = jwt.decode(token, setting.SECRET_KEY,
                               algorithms=setting.ALGORITHM)
-        print(verified)
-        if verified['expiry'] >= time.time():
-            username = verified['user']
-            user = db.query(User).filter(User.email == username).first()
-            if not user:
-                raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authentication failed")
-            return user
+        if not verified['expiry'] >= time.time():
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED, detail="Session Expired. !!!!")
+        username = verified['user']
+        user = db.query(User).filter(User.email == username).first()
+        if not user:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED, detail="Credentials Invalid. !!!!")
+        return user
     except JWTError:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Credentials Invalid")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Credentials Invalid. !!!!")
