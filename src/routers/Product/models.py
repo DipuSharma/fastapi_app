@@ -16,8 +16,13 @@ class Product(Base):
     product_size = Column(String, nullable=True)
     product_color = Column(String, nullable=True)
     description= Column(String, nullable=True)
-    image = Column(String, nullable=True)
     user_id = Column(Integer, ForeignKey("users.id", ondelete='CASCADE'))
     user = relationship("User", back_populates="product")
+
+class ProductImage(Base):
+    __tablename__ = 'pro_image'
+    id = Column(Integer, primary_key=True, index=True)
+    product_id = Column(Integer, ForeignKey("pro_image.id", ondelete="CASCADE"))
+    product_image_path = Column(String, nullable=True)
 
 Base.metadata.create_all(engine)

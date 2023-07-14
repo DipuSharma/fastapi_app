@@ -1,11 +1,11 @@
-from fastapi import APIRouter, Depends, Body
+from fastapi import APIRouter, Depends, Body, File, UploadFile
 from sqlalchemy.orm.session import Session
 from src.config.db_config import get_db
 from celery.result import AsyncResult
 from starlette.responses import JSONResponse
 from src.routers.Auth.tasks import operation_task
 from src.routers.Auth.schemas import CeleryTest, UserRegistrationSchema, UserLoginSchema, EmailSchema, VerifyOTP, ResetPassword, DisplayUserSchema, UserIn, BaseUser
-from src.routers.Auth.services import registration, user_login, forgot_Password, verify_otp, reset_password, get_all_user
+from src.routers.Auth.services import registration, user_login, forgot_Password, verify_otp, reset_password, get_all_user, addProfileImage
 from fastapi.security.oauth2 import OAuth2PasswordRequestForm
 from src.config.auth import get_current_user
 
@@ -47,6 +47,12 @@ async def reset_Password(form: ResetPassword = Body(default=None), db: Session =
 @router.get('/user', response_model= list[DisplayUserSchema])
 def getUsers(db:Session = Depends(get_db)):
     return get_all_user(db)
+
+# Single image file upload
+@router.post('/add-profile-image')
+async def add_profile_image(file: UploadFile = File(...)):
+    response = await addProfileImage(file)
+    return response
 
 @router.post("/operation")
 async def get_mathmetic_result(form: CeleryTest, token: str = Depends(get_current_user)):

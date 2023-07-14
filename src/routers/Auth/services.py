@@ -1,9 +1,10 @@
 
 import os
-import random
 import re
+import shutil
+import random
+import aiofiles
 from time import time
-
 from dotenv import load_dotenv
 from fastapi import Body, HTTPException, status
 from fastapi.templating import Jinja2Templates
@@ -13,7 +14,8 @@ from sqlalchemy.orm import Session
 from src.routers.Auth.models import User, OTP
 from src.config.password_hashing import Hash
 from src.config.auth import create_access_token
-from src.config.configuration import setting
+from src.config.configuration import setting, HOST
+from src.routers.Auth.tasks import uploadProfilePicture
 
 templates = Jinja2Templates(directory="templates")
 regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
@@ -151,6 +153,19 @@ def reset_password(form=None, db=None):
             existing_data.update({"password": password})
             db.commit()
             return {"message": "Password Reset Successfully"}
+
+async def addProfileImage(file):
+    destination_file_path = "./static/image/profile/"+file.filename #output file path
+    generated_url = f'{HOST}' + destination_file_path[1:]
+    async with aiofiles.open(destination_file_path, 'wb') as out_file:
+        shutil.copyfileobj(file.file, out_file)
+    return {"Result": "OK", "url": generated_url}
+    # result = await uploadProfilePicture(file)
+    # profile = UserProfile(photo=profile_path, user_id=user.id)
+    # db.add(profile)
+    # db.commit()
+    # image_upload.delay(file)
+    # return result
 
 def get_all_user(db=None):
     data = db.query(User).all()

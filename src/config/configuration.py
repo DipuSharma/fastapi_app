@@ -12,6 +12,7 @@ EMAIL = os.getenv("MAIL_FROM")
 PASS = os.getenv("PASS")
 ALGO = os.getenv("ALGO")
 BASE_DIR = Path(__file__).resolve().parent
+HOST = os.getenv("HOST")
 HOST_URL = os.getenv("HOST_URL")
 HOST_PORT = os.getenv("HOST_PORT")
 
@@ -19,7 +20,12 @@ HOST_PORT = os.getenv("HOST_PORT")
 
 CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL")
 CELERY_BACKEND = os.getenv("CELERY_RESULT_BACKEND")
+# Odoo Database configure 
 
+ODOO_URL = os.getenv("odoo_url")
+ODOO_DB = os.getenv("odoo_db_name")
+ODOO_DB_USER = os.getenv("odoo_username")
+ODOO_DB_PASS = os.getenv("odoo_password")
 
 class Settings:
     PORT = 8000

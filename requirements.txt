@@ -1,5 +1,4 @@
-# Python 3.10.6
-
+aiofiles==23.1.0
 aiosmtplib==2.0.2
 amqp==5.1.1
 anyio==3.7.0

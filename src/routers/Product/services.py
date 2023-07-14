@@ -1,7 +1,8 @@
+import os
 from fastapi import HTTPException, status
 from src.routers.Product.models import Product
 from src.routers.Auth.models import User
-
+from src.config.configuration import HOST
 
 def disc_price(li_price, sell_price):
     discount = int(((li_price - sell_price) / li_price) * 100)
@@ -13,7 +14,7 @@ def addproduct(form, db, user):
     existing_data = db.query(Product).filter(Product.batch_No == form.batch_No and Product.company_name ==
                                              form.company_name and Product.user_id == get_user_id).first()
     if existing_data:
-        return {"status": "failed", "message": "Product details already exists."}
+        return {"status": "failed", "message": "Product details already exists.", "data": form}
     product = Product(product_name=form.product_name, company_name=form.company_name,
                       batch_No=form.batch_No, selling_price=form.selling_price,
                       list_price=form.list_price,
@@ -27,4 +28,9 @@ def addproduct(form, db, user):
     db.add(product)
     db.commit()
     db.refresh(product)
-    return {"status": "success", "message": "Product added successfully"}
+    return {"status": "success", "message": "Product added successfully", "data": form}
+
+
+def showAllProduct(db):
+    products = db.query(Product).all()
+    return [{"product_name": record.product_name, "company_name": record.company_name, "batch_No": record.batch_No, 'selling_price': record.selling_price, 'list_price': record.list_price, 'product_size':'', 'product_color': '', 'description': ''} for record in products]

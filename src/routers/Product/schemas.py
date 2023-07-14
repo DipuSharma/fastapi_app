@@ -3,9 +3,9 @@ from typing import List, Optional
 from pydantic import EmailStr, BaseModel, validator, Field
 
 
-class Image(BaseModel):
-    url: str
-    name: str
+class ImageSchema(BaseModel):
+    id: int
+    url: List[str] = []
 
     class Congig:
         orm_mode: True
@@ -20,7 +20,7 @@ class AddProductSchema(BaseModel):
     product_size: Optional[str]
     product_color: Optional[str]
     description: Optional[str]
-    image: Image | None = None
+    image: Optional[ImageSchema]
 
     class Config:
         orm_mode: True
@@ -34,9 +34,20 @@ class AddProductSchema(BaseModel):
                 "product_size": "string",
                 "product_color": "string",
                 "description": "string",
-                "image": {
-                    "url": "string",
-                    "name": "string"
-                }
+                "image": [{"id":"integer", "url": []}]
             }
         }
+
+class DisplayProductShema(BaseModel):
+    product_name: str
+    company_name: str
+    batch_No: str
+    selling_price: float
+    list_price: float
+    product_size: str
+    product_color: str
+    description: str
+    images: List[ImageSchema] = []
+    
+    class Config:
+        orm_mode: True
