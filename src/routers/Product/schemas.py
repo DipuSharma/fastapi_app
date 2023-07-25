@@ -20,21 +20,19 @@ class AddProductSchema(BaseModel):
     product_size: Optional[str]
     product_color: Optional[str]
     description: Optional[str]
-    image: Optional[ImageSchema]
 
     class Config:
         orm_mode: True
         schema_extra = {
             "example": {
-                "product_name": "string",
-                "company_name": "string",
-                "batch_No": "string",
-                "selling_price": 0,
-                "list_price": 0,
-                "product_size": "string",
-                "product_color": "string",
-                "description": "string",
-                "image": [{"id":"integer", "url": []}]
+                "product_name": "T-Shirt",
+                "company_name": "Sparky",
+                "batch_No": "TS001",
+                "selling_price": 799,
+                "list_price": 899,
+                "product_size": "M",
+                "product_color": "Red",
+                "description": "Nice Product",
             }
         }
 
@@ -47,7 +45,17 @@ class DisplayProductShema(BaseModel):
     product_size: str
     product_color: str
     description: str
-    images: List[ImageSchema] = []
     
     class Config:
         orm_mode: True
+
+class DeleteProductShema(BaseModel):
+    products_id : List[int] = []
+
+    class Config:
+        orm_mode: True
+        schema_extra = {
+            "example": {
+                "products_id": [],
+            }
+        }

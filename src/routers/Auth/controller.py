@@ -10,7 +10,7 @@ from fastapi.security.oauth2 import OAuth2PasswordRequestForm
 from src.config.auth import get_current_user
 
 router = APIRouter(
-    prefix='/api', tags=[f'Auth'], responses={404: {"description": "Not found"}})
+    prefix='/api/user', tags=[f'User'], responses={404: {"description": "Not found"}})
 
 
 @router.post("/signup")
@@ -50,8 +50,8 @@ def getUsers(db:Session = Depends(get_db)):
 
 # Single image file upload
 @router.post('/add-profile-image')
-async def add_profile_image(file: UploadFile = File(...)):
-    response = await addProfileImage(file)
+async def add_profile_image(file: UploadFile = File(...), db: Session = Depends(get_db), token: Session = Depends(get_current_user)):
+    response = await addProfileImage(file, db, token)
     return response
 
 @router.post("/operation")
@@ -62,7 +62,7 @@ async def get_mathmetic_result(form: CeleryTest, token: str = Depends(get_curren
 
 
 @router.get("/result/{task_id}")
-async def result(task_id: str):
+async def result(task_id: str, token: Session = Depends(get_current_user)):
     task = AsyncResult(task_id)
 
     # Task Not Ready

@@ -9,7 +9,7 @@ from src.routers.Auth.models import User
 
 JWT_SECRET = setting.SECRET_KEY
 JWT_ALGORITHM = ALGO
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl='/api/signin')
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl='/api/user/signin')
 
 
 # function used for signing the JWT string
@@ -31,7 +31,7 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED, detail="Session Expired. !!!!")
         username = verified['user']
-        user = db.query(User).filter(User.email == username).first()
+        user = db.query(User).filter(User.email == username and User.is_active == True).first()
         if not user:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED, detail="Credentials Invalid. !!!!")

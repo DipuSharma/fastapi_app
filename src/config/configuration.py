@@ -14,7 +14,7 @@ ALGO = os.getenv("ALGO")
 BASE_DIR = Path(__file__).resolve().parent
 HOST = os.getenv("HOST")
 HOST_URL = os.getenv("HOST_URL")
-HOST_PORT = os.getenv("HOST_PORT")
+HOST_PORT = int(os.getenv("HOST_PORT"))
 
 # Celery objects
 
@@ -41,10 +41,10 @@ class Settings:
     EMAIL = EMAIL
     PASS = PASS
     TAGS = [
-        {"name": "Auth", "description": "This is Authentication Routes"},
-        {"name": "Administrator", "description": "This is Admin Routes"},
-        {"name": "Address", "description": "This is Address Routes"},
-        {"name": "Customer", "description": "This is customer routes"},
+        {"name": "User", "description": "This is User Routes"},
+        # {"name": "Administrator", "description": "This is Admin Routes"},
+        # {"name": "Address", "description": "This is Address Routes"},
+        # {"name": "Customer", "description": "This is customer routes"},
         {"name": "Product", "description": "This is Product Routes"},
         {"name": "Shop", "description": "This is shop Routes"},
     ]

@@ -11,7 +11,7 @@ from fastapi.templating import Jinja2Templates
 from fastapi_mail import ConnectionConfig
 from jose import jwt
 from sqlalchemy.orm import Session
-from src.routers.Auth.models import User, OTP
+from src.routers.Auth.models import User, OTP, UserProfile, Address
 from src.config.password_hashing import Hash
 from src.config.auth import create_access_token
 from src.config.configuration import setting, HOST
@@ -90,8 +90,8 @@ def forgot_Password(db=None, user=None):
     if not re.fullmatch(regex, user.email):
         return {"status": "failed", "message": "Invalid Email ID Please Enter Valid Email"}
     otp = ''.join([str(random.randint(0, 9)) for i in range(6)])
-    user_entry = OTP(email=user.email, otp=otp, status= False,
-                    exp_time=time() + 60, count_otp=1)
+    user_entry = OTP(email=user.email, otp=otp, status=False,
+                     exp_time=time() + 60, count_otp=1)
     otp_email = db.query(OTP).filter(OTP.email == user.email).first()
     existing_data = db.query(OTP).filter(OTP.email == user.email)
     if otp_email:
@@ -99,23 +99,24 @@ def forgot_Password(db=None, user=None):
         if num < 3:
             num = num + 1
             existing_data.update(
-                {"status":False, "otp": otp, "exp_time": time() + 60, "count_otp": num})
+                {"status": False, "otp": otp, "exp_time": time() + 60, "count_otp": num})
             db.commit()
-            return {"status":"success", "message": "otp send on your mail id", "otp": otp}
-        return {"status": "failed", "message":"your ip addresss is blocked"}
+            return {"status": "success", "message": "otp send on your mail id", "otp": otp}
+        return {"status": "failed", "message": "your ip addresss is blocked"}
 
     db.add(user_entry)
     db.commit()
     db.refresh(user_entry)
-        # message = MessageSchema(
-        #     subject="MyApp Account Verification Email",
-        #     recipients=[user.email],  # List of Recipients
-        #     body=f"your otp is {otp}"
-        # )
-        # fm = FastMail(conf)
-        # await fm.send_message(message)
+    # message = MessageSchema(
+    #     subject="MyApp Account Verification Email",
+    #     recipients=[user.email],  # List of Recipients
+    #     body=f"your otp is {otp}"
+    # )
+    # fm = FastMail(conf)
+    # await fm.send_message(message)
     return {"status": "Ok", "message": "Otp send on your mail id", "Otp": otp}
-        
+
+
 def verify_otp(form=None, db=None):
     num = 1
     if not form:
@@ -127,7 +128,8 @@ def verify_otp(form=None, db=None):
     existing_data = db.query(OTP).filter(OTP.otp == form.otp)
     if data.otp == form.otp and otp_db_time >= time():
         data = {"sub": data.email, "expiry": time() + 600}
-        jwt_token = jwt.encode(data, setting.SECRET_KEY, algorithm=setting.ALGORITHM)
+        jwt_token = jwt.encode(data, setting.SECRET_KEY,
+                               algorithm=setting.ALGORITHM)
         existing_data.update({"status": True, "count_otp": num})
         db.commit()
         return {"status": "success", "message": "your otp verification successfully", "access-token": jwt_token}
@@ -137,37 +139,39 @@ def verify_otp(form=None, db=None):
 
 
 def reset_password(form=None, db=None):
-        verified = jwt.decode(form.token, setting.SECRET_KEY,
-                              algorithms=setting.ALGORITHM)
-        if verified['expiry'] >= time():
-            email: str = verified.get("sub")
-            existing_data = db.query(User).filter(
-                User.email == email and User.is_active == True)
-            if not existing_data.first():
-                return {"status": "failed", "message": "Password Reset Failed"}
+    verified = jwt.decode(form.token, setting.SECRET_KEY,
+                          algorithms=setting.ALGORITHM)
+    if not verified['expiry'] >= time():
+        return {"message": "your session is expired"}
+    email: str = verified.get("sub")
+    existing_data = db.query(User).filter(
+        User.email == email and User.is_active == True)
+    if not existing_data.first():
+        return {"status": "failed", "message": "Password not restored"}
 
-            if form.password != form.confirm_password:
-                return {"status": "failed", "message": "Password and Confirm Password mismatch"}
+    if form.password != form.confirm_password:
+        return {"status": "failed", "message": "Password and Confirm Password mismatch"}
 
-            password = Hash.get_hash_pass(form.password)
-            existing_data.update({"password": password})
-            db.commit()
-            return {"message": "Password Reset Successfully"}
+    password = Hash.get_hash_pass(form.password)
+    existing_data.update({"password": password})
+    db.commit()
+    return {"message": "Password Reset Successfully"}
 
-async def addProfileImage(file):
-    destination_file_path = "./static/image/profile/"+file.filename #output file path
-    generated_url = f'{HOST}' + destination_file_path[1:]
+
+async def addProfileImage(file, db, token):
+    destination_file_path = "./static/image/profile/"+file.filename  # output file path
+    # if destination_file_path:
+    #     return {'status': 'failed', 'message': 'this image already exists', 'name':file.filename}
+    generated_url = HOST + destination_file_path[1:]
     async with aiofiles.open(destination_file_path, 'wb') as out_file:
         shutil.copyfileobj(file.file, out_file)
-    return {"Result": "OK", "url": generated_url}
-    # result = await uploadProfilePicture(file)
-    # profile = UserProfile(photo=profile_path, user_id=user.id)
-    # db.add(profile)
-    # db.commit()
-    # image_upload.delay(file)
-    # return result
+    profile = UserProfile(image_name= file.filename, image_page=generated_url, userid=token.id)
+    db.add(profile)
+    db.commit()
+    db.refresh(profile)
+    return {"status": "OK", 'message':"Profile image uploaded successfully", "url": generated_url}
+
 
 def get_all_user(db=None):
     data = db.query(User).all()
-    for record in data:
-        return [{"username": record.username, "email": record.email, "is_active": record.is_active}]
+    return [{"username": record.username, "email": record.email, "is_active": record.is_active} for record in data]
