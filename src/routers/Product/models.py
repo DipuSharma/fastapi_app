@@ -25,6 +25,7 @@ class Product(Base):
 class ProductImage(Base):
     __tablename__ = 'product_image'
     id = Column(Integer, primary_key=True, index=True)
+    product_image_name = Column(String, nullable=False)
     product_image_path = Column(String, nullable=False)
     product_id = Column(Integer, ForeignKey("products.id", ondelete="CASCADE"))
     products = relationship("Product", back_populates='product_images')

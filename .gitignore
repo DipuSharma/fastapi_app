@@ -1,6 +1,7 @@
 
 # Directory add
 venv/
+alembic/
 .mypy_cache/
 .vscode/
 __pycache__/

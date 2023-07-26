@@ -27,6 +27,21 @@ class UserProfile(Base):
     userid = Column(Integer, ForeignKey('users.id', ondelete='CASCADE'))
     users = relationship("User", back_populates='profile_image')
 
+class BussinessAccount(Base):
+    __tablename__ = "bussines_account"
+
+    id = Column(Integer, primary_key=True, index=True)
+    shop_name = Column(String, nullable=False)
+    registration_no = Column(String, nullable=False)
+    gst_no = Column(String, nullable=True)
+    address_line_1 = Column(String, nullable=False)
+    address_line_2 = Column(String, nullable=False)
+    country_name = Column(String, nullable=False)
+    state_name = Column(String, nullable=False)
+    city_name = Column(String, nullable=False)
+    zip_code = Column(String, nullable=False)
+    userid = Column(Integer, ForeignKey('users.id', ondelete='CASCADE'))
+
 
 class OTP(Base):
     __tablename__ = 'otp'
