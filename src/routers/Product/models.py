@@ -19,7 +19,7 @@ class Product(Base):
     description= Column(String, nullable=True)
     user_id = Column(Integer, ForeignKey("users.id", ondelete='CASCADE'))
     users = relationship("User", back_populates="products")
-    product_images = relationship('ProductImage', back_populates='products')
+    # product_images = relationship('ProductImage', back_populates='products')
 
 
 class ProductImage(Base):
@@ -33,4 +33,5 @@ class ProductImage(Base):
 
 User.products = relationship('Product', order_by = Product.id, back_populates = "users", cascade="all, delete, delete-orphan")
 Product.product_images = relationship('ProductImage', order_by = ProductImage.id, back_populates = "products", cascade="all, delete, delete-orphan")
+
 Base.metadata.create_all(engine)

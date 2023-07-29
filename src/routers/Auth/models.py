@@ -15,9 +15,9 @@ class User(Base):
     is_user = Column(Boolean)
     is_shopkeeper = Column(Boolean)
     is_active = Column(Boolean)
-    address = relationship("Address", back_populates="users")
-    products = relationship("Product", back_populates="users")
-    profile_image = relationship("UserProfile", back_populates="users")
+    # address = relationship("Address", back_populates="users")
+    # products = relationship("Product", back_populates="users")
+    # profile_image = relationship("UserProfile", back_populates="users")
 
 class UserProfile(Base):
     __tablename__ = 'profile_image'
